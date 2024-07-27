@@ -7,6 +7,8 @@ import userRoute from './routes/userRoute.js'
 
 //vonfigure .env
 dotenv.config();
+
+//console.log("JWT_SECRET:", process.env.JWT_SECRET);
 //Conenction to DB
 connectDB();
 
