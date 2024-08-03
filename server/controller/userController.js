@@ -1,19 +1,11 @@
 import userModel from "../Model/userModel.js";
-import { hashPassword,comparePassword } from '../utils/bcryptutils.js';
-import { generateToken } from '../utils/jwtUtils.js';
+import { hashPassword, comparePassword } from "../utils/bcryptutils.js";
+import { generateToken } from "../utils/jwtUtils.js";
 
 export const createUser = async (req, res) => {
   try {
-    const {
-      name,
-      email,
-      password,
-      phone,
-      address,
-      gender,
-      role,
-      profilePicture,
-    } = req.body;
+    const { name, email, password, phone, address, gender, profilePicture } =
+      req.body;
 
     // Validation
     if (!email || !password) {
@@ -29,17 +21,18 @@ export const createUser = async (req, res) => {
         message: "User Already exits with that mail",
       });
 
-    //hashing password  
+    //hashing password
     const hashedPassword = await hashPassword(password);
     // Create a user record with pending status
     const newUser = new userModel({
       name,
       email,
-      password:hashedPassword,
+      password: hashedPassword,
       phone,
       address,
       gender,
       role: "unauthorized_user", // Default role
+      status: "pending",
       profilePicture,
     });
 
@@ -54,18 +47,16 @@ export const createUser = async (req, res) => {
   }
 };
 
-export const login = async (req,res)=>{
+export const login = async (req, res) => {
   try {
-    const {email, password} = req.body
+    const { email, password } = req.body;
     // Validation
     if (!email || !password) {
-      return res
-        .status(400)
-        .send({ message: "Invalid mail or password" });
+      return res.status(400).send({ message: "Invalid mail or password" });
     }
 
-    const user = await userModel.findOne({email})
-    if(!user){
+    const user = await userModel.findOne({ email });
+    if (!user) {
       return res.status(404).send({
         success: false,
         message: "Email not register",
@@ -79,6 +70,11 @@ export const login = async (req,res)=>{
     if (!isMatch) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
+    // Check if user is approved
+    if (user.status !== "approved") {
+      return res.status(403).json({ message: "User not approved by admin" });
+    }
+
     //generating token
     const token = generateToken(user);
     //sending response
@@ -90,12 +86,56 @@ export const login = async (req,res)=>{
         id: user._id,
         name: user.name,
         email: user.email,
-        role: user.role
-      }
+        role: user.role,
+      },
     });
-
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error in login", error });
   }
-}
+};
+
+//pending user
+export const getPendingUser = async (req, res) => {
+  try {
+    const user = await userModel.find({ status: "pending" });
+    res.status(201).send({
+      sucess: true,
+      message: "All pending Users",
+      user,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error in get pending users...", error });
+  }
+};
+
+//admin approves user
+export const approveUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { role } = req.body;
+
+    // Update user status and role
+    const user = await userModel.findByIdAndUpdate(
+      id,
+      { status: "approved", role },
+      { new: true }
+    );
+
+    if (!user) {
+      return res
+        .status(404)
+        .send({ success: false, message: "User not found" });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "User approved successfully",
+      user,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error approving user", error });
+  }
+};

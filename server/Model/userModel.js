@@ -40,6 +40,11 @@ const userSchema = new mongoose.Schema(
       type: String, // URL from Cloudinary
       default: "",
     },
+    status: {
+      type: String,
+      enum: ["pending", "approved", "rejected"],
+      default: "pending",
+    },
   },
   { timestamps: true }
 );
