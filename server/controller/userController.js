@@ -1,11 +1,23 @@
 import userModel from "../Model/userModel.js";
 import { hashPassword, comparePassword } from "../utils/bcryptutils.js";
+import { getDataUri } from "../utils/datauri.js";
 import { generateToken } from "../utils/jwtUtils.js";
+import cloudinary from "cloudinary";
 
 export const createUser = async (req, res) => {
   try {
-    const { name, email, password, phone, address, gender, profilePicture } =
-      req.body;
+    const {
+      name,
+      email,
+      password,
+      phone,
+      address,
+      gender,
+      skills,
+      biography,
+      socials,
+      locations,
+    } = req.body;
 
     // Validation
     if (!email || !password) {
@@ -33,7 +45,14 @@ export const createUser = async (req, res) => {
       gender,
       role: "unauthorized_user", // Default role
       status: "pending",
-      profilePicture,
+      skills,
+      biography,
+      socials,
+      locations,
+      profilePicture: {
+        public_id: "",
+        url: "https://i.ibb.co/4pDNDk1/avatar.png",
+      },
     });
 
     await newUser.save();
@@ -44,6 +63,76 @@ export const createUser = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error submitting user details", error });
+  }
+};
+
+export const updateProfile = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const updates = req.body;
+    const options = { new: true };
+
+    const updatedUser = await userModel.findByIdAndUpdate(
+      userId,
+      updates,
+      options
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json({ user: updatedUser });
+  } catch (error) {
+    console.error("Error updating user profile", error);
+    res.status(500).json({ message: "Error updating user profile" });
+  }
+};
+
+export const updateProfilePic = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const user = await userModel.findById(userId);
+    //getting photo
+    const file = getDataUri(req.file);
+    //deleting prev image
+    if (user.profilePicture.public_id) {
+      await cloudinary.v2.uploader.destroy(user.profilePicture.public_id);
+    }
+    //update
+    const cloudinaryDB = await cloudinary.v2.uploader.upload(file.content);
+    user.profilePicture = {
+      public_id: cloudinaryDB.public_id,
+      url: cloudinaryDB.secure_url,
+    };
+    //saving function
+    await user.save();
+    res.status(200).send({
+      success: true,
+      message: "Profile pic update",
+      profilePicture: user.profilePicture,
+    });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ message: "Error submitting Update profile details", error });
+  }
+};
+
+export const getProfile = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const user = await userModel.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).send({ success: true, message: "User Profile", user });
+  } catch (error) {
+    console.error("Error fetching user profile", error);
+    res.status(500).json({ message: "Error fetching user profile" });
   }
 };
 

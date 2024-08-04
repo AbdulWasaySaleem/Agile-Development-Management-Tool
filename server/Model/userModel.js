@@ -37,13 +37,59 @@ const userSchema = new mongoose.Schema(
       default: "unauthorized_user",
     },
     profilePicture: {
-      type: String, // URL from Cloudinary
-      default: "",
+      public_id: {
+        type: String,
+        default: ""
+      },
+      url: {
+        type: String,
+        default: "https://i.ibb.co/4pDNDk1/avatar.png"
+      },
     },
     status: {
       type: String,
       enum: ["pending", "approved", "rejected"],
       default: "pending",
+    },
+    biography: { type: String }, 
+    socials: {
+      twitter: { type: String },
+      linkedin: { type: String },
+      github: { type: String },
+    }, 
+    locations: [String],
+    skills: {
+      type: [String],
+      enum: [
+        "HTML",
+        "CSS",
+        "JavaScript",
+        "React",
+        "Vue",
+        "Angular",
+        "Next.js",
+        "Node.js",
+        "Express",
+        "Python",
+        "Django",
+        "Flask",
+        "Java",
+        "Spring",
+        "SQL",
+        "MongoDB",
+        "Git",
+        "Jenkins",
+        "Docker",
+        "Jest",
+        "Cypress",
+        "Figma",
+        "Adobe XD",
+        "Tailwind CSS",
+        "Bootstrap",
+        "Azure",
+        "GCP",
+      ],
+      default: [],
     },
   },
   { timestamps: true }
