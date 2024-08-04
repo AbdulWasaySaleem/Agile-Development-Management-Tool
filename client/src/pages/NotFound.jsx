@@ -59,15 +59,24 @@ const NotFound = () => {
         className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer"
       />
       
-      <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 overflow-x-auto">
+      <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
         {previews.length > 0 && (
           previews.map((preview, index) => (
             <div key={index} className="relative">
-              <img
-                src={preview}
-                alt={`Preview ${index}`}
-                className="w-full object-cover rounded-md"
-              />
+              {/* Check file type and render accordingly */}
+              {files[index].type.startsWith('image') ? (
+                <img
+                  src={preview}
+                  alt={`Preview ${index}`}
+                  className="w-full  object-cover rounded-md"
+                />
+              ) : files[index].type.startsWith('video') ? (
+                <video
+                  src={preview}
+                  controls
+                  className="w-full object-cover rounded-md"
+                />
+              ) : null}
               <button
                 onClick={() => {
                   // Remove file from the state and update previews
