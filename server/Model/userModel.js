@@ -43,9 +43,10 @@ const userSchema = new mongoose.Schema(
       },
       url: {
         type: String,
-        default: "https://i.ibb.co/4pDNDk1/avatar.png"
+        default: ""
       },
     },
+    
     status: {
       type: String,
       enum: ["pending", "approved", "rejected"],

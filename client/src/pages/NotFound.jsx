@@ -49,6 +49,7 @@ const NotFound = () => {
   }, [previews]);
 
   return (
+    <>
     <div className="p-6 mx-auto bg-white rounded-xl shadow-md space-y-4">
       <h1 className="text-xl font-bold text-gray-900">Upload Files</h1>
       
@@ -99,6 +100,55 @@ const NotFound = () => {
         Upload
       </button>
     </div>
+
+    <div className="flex flex-col h-full w-full max-w-[1400px] bg-gray-900 text-white">
+      {/* Header */}
+      <div className="flex items-center justify-between px-4 py-2 bg-gray-800 border-b border-gray-700">
+        <div className="flex items-center gap-3">
+          <img 
+            src="https://via.placeholder.com/40" 
+            alt="User Avatar" 
+            className="w-10 h-10 rounded-full"
+          />
+          <div>
+            <p className="font-bold">Username</p>
+            <p className="text-sm text-gray-400">Active now</p>
+          </div>
+        </div>
+        <div>
+          <button className="text-gray-400 hover:text-white">
+            <i className="fas fa-ellipsis-h"></i>
+          </button>
+        </div>
+      </div>
+
+      {/* Messages */}
+      <div className="flex-1 p-4 overflow-y-auto">
+        <div className="flex justify-end mb-2">
+          <div className="bg-blue-600 text-white p-3 rounded-lg max-w-xs">
+            <p>This is a message from you!</p>
+          </div>
+        </div>
+        <div className="flex justify-start mb-2">
+          <div className="bg-gray-700 text-white p-3 rounded-lg max-w-xs">
+            <p>This is a message from the other user!</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Message Input */}
+      <div className="flex items-center p-4 bg-gray-800 border-t border-gray-700">
+        <input 
+          type="text" 
+          placeholder="Type your message..." 
+          className="flex-1 px-4 py-2 rounded-full bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500"
+        />
+        <button className="ml-3 text-blue-500 hover:text-blue-400">
+          <i className="fas fa-paper-plane"></i>
+        </button>
+      </div>
+    </div>
+    </>
   );
 };
 

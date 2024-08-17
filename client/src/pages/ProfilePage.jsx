@@ -46,13 +46,14 @@ const ProfilePage = () => {
       try {
         if (userID && token) {
           const response = await axios.get(
-            `http://localhost:3001/api/v1/auth/userprofile/${userID}`,
+            `/api/v1/auth/userprofile/${userID}`,
             {
               headers: {
                 Authorization: `Bearer ${token}`,
               },
             }
           );
+          console.log("response", response)
           setUserProfile(response.data);
           setProfileData({
             name: response.data.user.name,
@@ -90,7 +91,7 @@ const ProfilePage = () => {
 
     try {
       const response = await axios.put(
-        `http://localhost:3001/api/v1/auth/update-pic/${userID}`,
+        `/api/v1/auth/update-pic/${userID}`,
         formData,
         {
           headers: {
@@ -128,7 +129,7 @@ const ProfilePage = () => {
   const handleUpdate = async () => {
     try {
       await axios.put(
-        `http://localhost:3001/api/v1/auth/update-profile/${userID}`,
+        `/api/v1/auth/update-profile/${userID}`,
         profileData,
         {
           headers: {

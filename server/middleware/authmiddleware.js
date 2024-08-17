@@ -1,17 +1,36 @@
 import JWT from "jsonwebtoken";
 import userModel from "../Model/userModel.js";
 
-export const requireSignIn = (req, res, next) => {
+export const requireSignIn = async (req, res, next) => {
   try {
-    //console.log("Secrete", process.env.JWT_SECRET);
-    //console.log("headers", req.headers.authorization);
+    const token = req.cookies.jwt;
 
-    const decode = JWT.verify(
-      req.headers.authorization,
-      process.env.JWT_SECRET
-    );
+    if (!token) {
+      return res.status(401).json({
+        error: "Unautorized -No Token Provided",
+      });
+    }
+    //console.log("token", token);
+
+    const decode = JWT.verify(token, process.env.JWT_SECRET);
+
     //console.log("decode", decode);
-    req.user = decode;
+    if (!decode) {
+      return res.status(401).json({
+        error: "Unautorized -Invalid Token",
+      });
+    }
+
+    const user = await userModel.findById(decode.userId).select("-password");
+
+    if (!user) {
+      return res.status(401).json({
+        error: "User not found",
+      });
+    }
+    //console.log("user:", user);
+
+    req.user = user;
     next();
   } catch (error) {
     console.log("Error on middleware", error);

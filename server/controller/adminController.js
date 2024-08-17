@@ -14,11 +14,9 @@ export const handleUserApproval = async (req, res) => {
     user.status = approve ? "approved" : "rejected";
     await user.save();
 
-    res
-      .status(200)
-      .json({
-        message: `User ${approve ? "approved" : "rejected"} successfully`,
-      });
+    res.status(200).json({
+      message: `User ${approve ? "approved" : "rejected"} successfully`,
+    });
   } catch (error) {
     res.status(500).json({ status: false, message: "Server error", error });
   }

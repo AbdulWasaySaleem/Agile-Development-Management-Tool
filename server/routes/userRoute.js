@@ -1,10 +1,11 @@
 import express from "express";
 import {
   approveUser,
-  createUser,
   getPendingUser,
   getProfile,
+  logOut,
   login,
+  signUp,
   updateProfile,
   updateProfilePic,
 } from "../controller/userController.js";
@@ -14,8 +15,9 @@ import { singleUpload } from "../middleware/multer.js";
 const router = express.Router();
 
 //creating a user
-router.post("/user", createUser);
+router.post("/user", signUp);
 router.post("/login", login);
+router.post("/logout", logOut);
 
 //updating profile pic
 router.put('/userprofile/:id', updateProfile);

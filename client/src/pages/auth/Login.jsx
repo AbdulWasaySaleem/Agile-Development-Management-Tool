@@ -3,44 +3,51 @@ import Layout from "../../components/Layout";
 import axios from "axios";
 import { useAuth } from "../../components/Context/UserContext";
 import { useLocation, useNavigate } from "react-router-dom";
-import bytesync from "../../assets/ByteSync.png"
+import bytesync from "../../assets/ByteSync.png";
+import { toast } from "react-toastify";
 
 const Login = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [auth,setAuth] = useAuth()
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [auth, setAuth] = useAuth();
 
   const navigate = useNavigate();
-  const location = useLocation()
 
-  
-  console.log('Auth state:', auth); // For debugging
-  
-
+  console.log("Auth state:", auth); // For debugging
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
-      const response = await axios.post("http://localhost:3001/api/v1/auth/login", { email, password });
+      const response = await axios.post("/api/v1/auth/login", {
+        email,
+        password,
+      });
       if (response.data.success) {
-        alert("Login successful");
+        toast.success("Login successful");
         setAuth({
           user: response.data.user,
           token: response.data.token,
         });
         localStorage.setItem("auth", JSON.stringify(response.data));
-        navigate('/')
+        setLoading(false);
+        navigate("/");
       }
     } catch (error) {
+      setLoading(false);
+      toast.error(error?.response)
       console.error("Error on login:", error.message);
     }
   };
 
   return (
-
     <section className="bg-gray-50 dark:bg-gray-900">
       <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
-        <a href="#" className="flex items-center mb-6 text-2xl font-semibold text-gray-900 dark:text-white">
+        <a
+          href="#"
+          className="flex items-center mb-6 text-2xl font-semibold text-gray-900 dark:text-white"
+        >
           <img className="w-8 h-8 mr-2" src={bytesync} alt="logo" />
           ByteSync Studios
         </a>
@@ -51,7 +58,10 @@ const Login = () => {
             </h1>
             <form className="space-y-4 md:space-y-6" onSubmit={handleSubmit}>
               <div>
-                <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                <label
+                  htmlFor="email"
+                  className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                >
                   Your email
                 </label>
                 <input
@@ -66,7 +76,10 @@ const Login = () => {
                 />
               </div>
               <div>
-                <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                <label
+                  htmlFor="password"
+                  className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                >
                   Password
                 </label>
                 <input
@@ -81,8 +94,10 @@ const Login = () => {
                 />
               </div>
               <div className="flex items-center justify-between">
-
-                <a href="#" className="text-sm font-medium text-primary-600 hover:underline dark:text-primary-500">
+                <a
+                  href="#"
+                  className="text-sm font-medium text-primary-600 hover:underline dark:text-primary-500"
+                >
                   Forgot password?
                 </a>
               </div>
@@ -90,14 +105,13 @@ const Login = () => {
                 type="submit"
                 className="w-full text-white bg-primary-600 hover:bg-primary-700 bg-blue-600 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
               >
-                Sign in
+                {loading ? "loading..." : "Login"}
               </button>
             </form>
           </div>
         </div>
       </div>
     </section>
-
   );
 };
 

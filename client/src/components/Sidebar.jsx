@@ -17,7 +17,7 @@ import { AiOutlineMail } from "react-icons/ai"; // Import the Mail icon for Mess
 
 const Sidebar = () => {
   const [auth] = useAuth();
-  const role = (auth.user?.role || "").toLowerCase();
+  const role = (auth.user?.role || ""); //.toLowerCase()
 
   const renderLinks = () => {
     switch (role) {
@@ -113,6 +113,10 @@ const Sidebar = () => {
             <Link to="/tasks" className="sidebar-link">
               <MdAssignment className="text-lg mr-4" />
               <span>Tasks</span>
+            </Link>
+            <Link to="/messages" className="sidebar-link">
+              <AiOutlineMail className="text-lg mr-4" />
+              <span>Messages Inbox</span>
             </Link>
             <Link to="/reports" className="sidebar-link">
               <FaChartBar className="text-lg mr-4" />
