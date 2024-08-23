@@ -1,4 +1,7 @@
 import React, { useState } from 'react';
+import { FaHome, FaProjectDiagram, FaSignOutAlt } from "react-icons/fa";
+import { FiSettings } from "react-icons/fi";
+import { AiOutlineUser } from "react-icons/ai";
 
 const NotFound = () => {
   const [files, setFiles] = useState([]);
@@ -47,6 +50,8 @@ const NotFound = () => {
       previews.forEach(url => URL.revokeObjectURL(url));
     };
   }, [previews]);
+
+  const username = "John Doe"; 
 
   return (
     <>
@@ -147,6 +152,48 @@ const NotFound = () => {
           <i className="fas fa-paper-plane"></i>
         </button>
       </div>
+    </div>
+    
+
+    <div className="min-h-screen flex bg-gray-100">
+      {/* Sidebar */}
+      <aside className="w-64 bg-gray-900 text-white flex flex-col">
+        <div className="p-4 flex items-center justify-between border-b border-gray-800">
+          <AiOutlineUser className="text-xl" />
+          <span className="text-lg">{username}</span>
+        </div>
+        <nav className="flex-1 p-4 space-y-2">
+          <a href="/" className="flex items-center space-x-2 hover:bg-gray-700 p-2 rounded">
+            <FaHome />
+            <span>Home</span>
+          </a>
+          <a href="/projects" className="flex items-center space-x-2 hover:bg-gray-700 p-2 rounded">
+            <FaProjectDiagram />
+            <span>Projects</span>
+          </a>
+          <a href="/settings" className="flex items-center space-x-2 hover:bg-gray-700 p-2 rounded">
+            <FiSettings />
+            <span>Settings</span>
+          </a>
+        </nav>
+        <div className="p-4 border-t border-gray-800">
+          <button className="w-full flex items-center space-x-2 hover:bg-gray-700 p-2 rounded">
+            <FaSignOutAlt />
+            <span>Logout</span>
+          </button>
+        </div>
+      </aside>
+
+      {/* Main Content */}
+      <main className="flex-1 p-6">
+        <h1 className="text-2xl font-semibold mb-4">Dashboard</h1>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {/* Cards or Content Blocks */}
+          <div className="p-4 bg-white shadow rounded-lg">Overview</div>
+          <div className="p-4 bg-white shadow rounded-lg">Tasks</div>
+          <div className="p-4 bg-white shadow rounded-lg">Reports</div>
+        </div>
+      </main>
     </div>
     </>
   );

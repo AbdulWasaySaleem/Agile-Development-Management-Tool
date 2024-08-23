@@ -8,12 +8,12 @@ import connectDB from "./config/db.js";
 import userRoute from "./routes/userRoute.js";
 import messageRoute from "./routes/messageRoute.js";
 import userMessageRoute from "./routes/userMessageRoute.js";
+import { app, server } from "./socket/socket.js";
 
 // Configure .env
 dotenv.config();
 
-// Connection to DB
-connectDB();
+
 
 // Cloudinary config
 cloudinary.v2.config({
@@ -22,8 +22,7 @@ cloudinary.v2.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-// Initialize Express app
-const app = express();
+
 
 // Middleware
 app.use(express.json());
@@ -40,6 +39,8 @@ app.get("/", (req, res) => {
 });
 
 const port = process.env.PORT || 3002;
-app.listen(port, () => {
+server.listen(port, () => {
+  // Connection to DB
+  connectDB();
   console.log(`Server is running at http://localhost:${port}/`);
 });

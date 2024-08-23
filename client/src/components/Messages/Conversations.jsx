@@ -1,21 +1,23 @@
-import React from 'react';
-import Conversation from './Conversation';
-import useGetConversation from '../../hooks/useGetConversation';
-import Loading from '../UI/Loading';
+// Conversations Component
+import React from "react";
+import Conversation from "./Conversation";
+import useGetConversation from "../../hooks/useGetConversation";
+import Loading from "../UI/Loading";
 
 const Conversations = () => {
   const { loading, conversations } = useGetConversation();
-  console.log("conversations: ", conversations);
 
   return (
-    <div className='py-2 flex flex-col overflow-auto'>
+    <div className="flex flex-col space-y-2">
       {loading && <Loading />}
       {conversations.map((conversation, idx) => (
+  
         <Conversation
           key={conversation._id}
           conversation={conversation}
           lastIdx={idx === conversations.length - 1}
         />
+      
       ))}
     </div>
   );
