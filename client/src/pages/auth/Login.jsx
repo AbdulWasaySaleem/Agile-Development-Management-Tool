@@ -1,45 +1,17 @@
-import React, { useState } from "react";
+import React from "react";
 import Layout from "../../components/Layout";
-import axios from "axios";
-import { useAuth } from "../../components/Context/UserContext";
-import { useLocation, useNavigate } from "react-router-dom";
 import bytesync from "../../assets/ByteSync.png";
-import { toast } from "react-toastify";
+import useLogin from "../../hooks/useLogin"; // Import the custom hook
 
 const Login = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [auth, setAuth] = useAuth();
-
-  const navigate = useNavigate();
-
-  console.log("Auth state:", auth); // For debugging
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    try {
-      const response = await axios.post("/api/v1/auth/login", {
-        email,
-        password,
-      });
-      if (response.data.success) {
-        toast.success("Login successful");
-        setAuth({
-          user: response.data.user,
-          token: response.data.token,
-        });
-        localStorage.setItem("auth", JSON.stringify(response.data));
-        setLoading(false);
-        navigate("/");
-      }
-    } catch (error) {
-      setLoading(false);
-      toast.error(error?.response)
-      console.error("Error on login:", error.message);
-    }
-  };
+  const {
+    email,
+    setEmail,
+    password,
+    setPassword,
+    loading,
+    handleSubmit,
+  } = useLogin(); // Use the custom hook
 
   return (
     <section className="bg-gray-50 dark:bg-gray-900">
