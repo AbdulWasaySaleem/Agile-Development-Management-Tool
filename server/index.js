@@ -8,6 +8,11 @@ import connectDB from "./config/db.js";
 import userRoute from "./routes/userRoute.js";
 import messageRoute from "./routes/messageRoute.js";
 import userMessageRoute from "./routes/userMessageRoute.js";
+import taskRoute from "./routes/taskRoute.js";
+import projectRoute from "./routes/projectRoute.js";
+import sprintRoute from "./routes/sprintRoute.js";
+import xpRoute from "./routes/xpRoute.js";
+
 import { app, server } from "./socket/socket.js";
 
 // Configure .env
@@ -33,6 +38,10 @@ app.use(cookieParser());
 app.use("/api/v1/auth", userRoute);
 app.use("/api/message", messageRoute);
 app.use("/api/usermessage", userMessageRoute);
+app.use("/api/v1/tasks", taskRoute)
+app.use("/api/v1/project", projectRoute)
+app.use("/api/v1/sprint", sprintRoute)
+app.use("/api/v1/xproute", xpRoute)
 
 app.get("/", (req, res) => {
   res.send("Hello World!");

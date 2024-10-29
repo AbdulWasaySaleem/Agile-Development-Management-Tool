@@ -264,3 +264,18 @@ export const approveUser = async (req, res) => {
     res.status(500).json({ message: "Error approving user", error });
   }
 };
+
+
+export const allUser = async (req, res) => {
+  try {
+    const users = await userModel.find().select('_id name skills profilePicture'); // Select only the fields you want
+    res.status(200).send({ // Use status 200 for successful responses
+      success: true, // Correct spelling from "sucess" to "success"
+      message: "All Users",
+      users, // Changed to "users" for consistency
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error in getting all users...", error });
+  }
+}

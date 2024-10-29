@@ -8,4 +8,3 @@ router.post("/send/:id", requireSignIn, sendMessage);
 router.get("/:id", requireSignIn, getMessages);
 
 export default router;
-;;;

@@ -1,8 +1,11 @@
-import React, { useEffect, useState } from 'react'
-import axios from 'axios'
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import { Table, Button, Modal, Select, message, Typography } from 'antd';
 
+const { Title } = Typography;
+const { Option } = Select;
 
-const Pendingusers = () => {
+const PendingUsers = () => {
   const [pendingUsers, setPendingUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
   const [role, setRole] = useState('');
@@ -11,8 +14,7 @@ const Pendingusers = () => {
   useEffect(() => {
     const fetchPendingUsers = async () => {
       try {
-        const response = await axios.get('http://localhost:3001/api/v1/auth/pendinguser');
-        console.log(response.data);
+        const response = await axios.get('/api/v1/auth/pendinguser');
         if (response.data.sucess && Array.isArray(response.data.user)) {
           setPendingUsers(response.data.user);
         } else {
@@ -26,7 +28,6 @@ const Pendingusers = () => {
   }, []);
 
   const handleClickOpen = (user) => {
-    console.log("handle click",user)
     setSelectedUser(user);
     setRole(user.role);
     setOpen(true);
@@ -40,80 +41,76 @@ const Pendingusers = () => {
   const handleApprove = async () => {
     try {
       const res = await axios.put(`http://localhost:3001/api/v1/auth/${selectedUser._id}/approve`, { role });
-      console.log(res)
-      setPendingUsers(pendingUsers.filter((user) => user._id !== selectedUser._id));
-      handleClose();
+      if (res.data.success) {
+        message.success('User approved successfully!');
+        setPendingUsers(pendingUsers.filter((user) => user._id !== selectedUser._id));
+        handleClose();
+      } else {
+        message.error('Failed to approve user');
+      }
     } catch (error) {
       console.error('Error approving user:', error);
+      message.error('Error approving user');
     }
   };
 
+  const columns = [
+    {
+      title: 'Name',
+      dataIndex: 'name',
+      key: 'name',
+    },
+    {
+      title: 'Email',
+      dataIndex: 'email',
+      key: 'email',
+    },
+    {
+      title: 'Actions',
+      key: 'actions',
+      render: (text, user) => (
+        <Button type="primary" onClick={() => handleClickOpen(user)}>
+          Approve
+        </Button>
+      ),
+    },
+  ];
 
   return (
-    <div className="container mx-auto p-4">
-      <h2 className="text-2xl font-bold mb-4">Pending Users</h2>
-      <table className="min-w-full bg-white">
-        <thead>
-          <tr>
-            <th className="py-2 px-4 border-b">Name</th>
-            <th className="py-2 px-4 border-b">Email</th>
-            <th className="py-2 px-4 border-b">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {pendingUsers.map((user) => (
-            <tr key={user._id}>
-              <td className="py-2 px-4 border-b">{user.name}</td>
-              <td className="py-2 px-4 border-b">{user.email}</td>
-              <td className="py-2 px-4 border-b">
-                <button
-                  className="bg-blue-500 text-white py-1 px-4 rounded"
-                  onClick={() => handleClickOpen(user)}
-                >
-                  Approve
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+    <div style={{ padding: '20px', backgroundColor: '#f9f9f9', borderRadius: '8px' }}>
+      <Title level={2} style={{ textAlign: 'center', marginBottom: '20px' }}>Pending Users</Title>
+      <Table
+        columns={columns}
+        dataSource={pendingUsers}
+        rowKey="_id"
+        pagination={{ pageSize: 5 }}
+        loading={!pendingUsers.length}
+      />
 
-      {open && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white rounded-lg p-4 w-1/3">
-            <h3 className="text-xl font-bold mb-4">Approve User</h3>
-            <div className="mb-4">
-              <label className="block mb-2">Role</label>
-              <select
-                value={role}
-                onChange={(e) => setRole(e.target.value)}
-                className="w-full p-2 border rounded"
-              >
-                <option value="admin">Admin</option>
-                <option value="senior_developer">Senior Developer</option>
-                <option value="junior_developer">Junior Developer</option>
-                <option value="HR">HR</option>
-              </select>
-            </div>
-            <div className="flex justify-end">
-              <button
-                className="bg-gray-500 text-white py-1 px-4 rounded mr-2"
-                onClick={handleClose}
-              >
-                Cancel
-              </button>
-              <button
-                className="bg-blue-500 text-white py-1 px-4 rounded"
-                onClick={handleApprove}
-              >
-                Approve
-              </button>
-            </div>
-          </div>
+      <Modal
+        title="Approve User"
+        visible={open}
+        onCancel={handleClose}
+        onOk={handleApprove}
+        okText="Approve"
+        cancelText="Cancel"
+      >
+        <div style={{ marginBottom: '20px' }}>
+          <label>Role</label>
+          <Select
+            value={role}
+            onChange={(value) => setRole(value)}
+            style={{ width: '100%', marginTop: '10px' }}
+          >
+            <Option value="admin">Admin</Option>
+            <Option value="senior_developer">Senior Developer</Option>
+            <Option value="junior_developer">Junior Developer</Option>
+            <Option value="HR">HR</Option>
+          </Select>
         </div>
-      )}
+      </Modal>
     </div>
   );
 };
 
-export default Pendingusers
+export default PendingUsers;

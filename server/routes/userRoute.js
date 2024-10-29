@@ -1,5 +1,6 @@
 import express from "express";
 import {
+  allUser,
   approveUser,
   getPendingUser,
   getProfile,
@@ -15,7 +16,7 @@ import { singleUpload } from "../middleware/multer.js";
 const router = express.Router();
 
 //creating a user
-router.post("/user", signUp);
+router.post("/signup", signUp);
 router.post("/login", login);
 router.post("/logout", logOut);
 
@@ -29,6 +30,8 @@ router.get("/userprofile/:id", getProfile);
 router.get("/pendinguser", getPendingUser);
 
 router.put("/:id/approve", approveUser);
+
+router.get("/all-users", allUser)
 
 //test route
 router.get("/test", requireSignIn, isAdmin, (req, res) => {
