@@ -30,7 +30,7 @@ const Header = () => {
   return (
     <AntdHeader style={{ padding: '0 16px', backgroundColor: '#f7fafc' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div style={{ fontSize: '24px', fontWeight: 'bold' }}>My Application</div>
+        <div style={{ fontSize: '24px', fontWeight: 'bold' }}>Agile Development</div>
         <div style={{ display: 'flex', alignItems: 'center' }}>
           <Badge count={5} style={{ marginRight: '16px' }}>
             <HiBell style={{ fontSize: '24px' }} />
@@ -43,13 +43,14 @@ const Header = () => {
                 <FaUser style={{ fontSize: '24px' }} />
               )}
               <div style={{ marginLeft: '8px' }}>
-                <span style={{ fontWeight: '600' }}>{user?.name || 'User'}</span>
+                <span style={{ fontWeight: '600', marginRight:'8px' }}>{user?.name || 'User'}</span>
                 <span style={{ color: '#a0aec0', fontSize: '12px' }}>{user?.role || 'Role'}</span>
               </div>
             </div>
           </Dropdown>
         </div>
       </div>
+      
     </AntdHeader>
   );
 };

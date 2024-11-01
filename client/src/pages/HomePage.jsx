@@ -10,12 +10,12 @@ import {
   Tooltip,
   Button,
 } from "antd";
-import BarChart from "../components/UI/Barchart"; // Bar chart component
-import LineChart from "../components/UI/LineChart"; // Line chart component
 import { useAuth } from "../components/Context/UserContext";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import { PlusOutlined } from "@ant-design/icons"; // Import the desired Ant Design icon
+import ProjectBarChart from "../components/UI/Barchart";
+import TaskLineChart from "../components/UI/LineChart";
 
 const { Header, Content } = Layout;
 const { Title, Text } = Typography;
@@ -24,10 +24,10 @@ const Homepage = () => {
   const [auth] = useAuth();
   const user = auth?.user;
 
-  const [loading, setLoading] = useState(true); // State for loading status
-  const [tasks, setTasks] = useState([]); // State to store tasks
-  const [taskCounts, setTaskCounts] = useState({}); // State for task status counts
-  const [projects, setProjects] = useState([]); // State for projects
+  const [loading, setLoading] = useState(true);
+  const [tasks, setTasks] = useState([]);
+  const [taskCounts, setTaskCounts] = useState({});
+  const [projects, setProjects] = useState([]);
 
   const fetchProjects = async () => {
     try {
@@ -46,21 +46,21 @@ const Homepage = () => {
   };
 
   const fetchTasks = async () => {
-    setLoading(true); // Set loading to true before fetching
+    setLoading(true);
     try {
       const response = await axios.get(
         "http://localhost:3001/api/v1/tasks/alltask"
       );
       if (response.data) {
         setTasks(response.data);
-        calculateTaskCounts(response.data); // Calculate task counts after fetching
+        calculateTaskCounts(response.data);
       } else {
         message.error("No tasks found!");
       }
     } catch (error) {
       message.error("Failed to fetch tasks!");
     } finally {
-      setLoading(false); // Stop loading
+      setLoading(false);
     }
   };
 
@@ -69,7 +69,7 @@ const Homepage = () => {
       todo: 0,
       inProgress: 0,
       done: 0,
-      total: tasks.length, // Count total tasks
+      total: tasks.length,
     };
 
     tasks.forEach((task) => {
@@ -82,22 +82,22 @@ const Homepage = () => {
       }
     });
 
-    setTaskCounts(counts); // Update the state with the counts
+    setTaskCounts(counts);
   };
 
   useEffect(() => {
     fetchTasks();
     fetchProjects();
-  }, []); // Fetch tasks on component mount
+  }, []);
 
   return (
-    <Layout
-      style={{ minHeight: "100vh", backgroundColor: "#f0f2f5", padding: "6px" }}
-    >
-      <Header style={{ backgroundColor: "#001529", padding: "0 24px" }}>
-        <Title level={3} style={{ color: "#fff", margin: 0 }}>
-          {user?.name || "User"}
-        </Title>
+    <Layout style={{ minHeight: "100vh", backgroundColor: "#f0f2f5" }}>
+      <Header style={{ backgroundColor: "#001529", padding: "0" }}>
+        <Row justify="center" align="middle" style={{ height: "100%" }}>
+          <Title level={3} style={{ color: "#fff", margin: 0 }}>
+            {user?.name || "User"}
+          </Title>
+        </Row>
       </Header>
 
       <Content style={{ padding: "24px" }}>
@@ -145,8 +145,6 @@ const Homepage = () => {
           </Row>
           <Row justify="end" style={{ marginTop: "16px" }}>
             <Link to="/tasks">
-              {" "}
-              {/* Change this to your desired route */}
               <Button type="link" icon={<PlusOutlined />}>
                 View More
               </Button>
@@ -214,12 +212,8 @@ const Homepage = () => {
               ))
             )}
           </Row>
-
-          {/* View More Button or Avatar */}
           <Row justify="end" style={{ marginTop: "16px" }}>
             <Link to="/adminProjects">
-              {" "}
-              {/* Change this to your desired route */}
               <Button type="link" icon={<PlusOutlined />}>
                 View More
               </Button>
@@ -232,12 +226,12 @@ const Homepage = () => {
           <Row gutter={[16, 16]}>
             <Col xs={24} md={12}>
               <Card bordered={false} style={{ backgroundColor: "#fafafa" }}>
-                <BarChart />
+                <ProjectBarChart projects={projects}/>
               </Card>
             </Col>
             <Col xs={24} md={12}>
               <Card bordered={false} style={{ backgroundColor: "#fafafa" }}>
-                <LineChart />
+                <TaskLineChart tasks={tasks}/>
               </Card>
             </Col>
           </Row>
@@ -257,7 +251,7 @@ const getStatusColor = (status) => {
     case "done":
       return "green";
     default:
-      return "blue"; // Default for any unexpected status
+      return "blue";
   }
 };
 
