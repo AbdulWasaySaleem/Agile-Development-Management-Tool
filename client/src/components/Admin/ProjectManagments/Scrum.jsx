@@ -39,39 +39,38 @@ const Scrum = () => {
   const [availableTasks, setAvailableTasks] = useState([]);
   const [selectedTaskIds, setSelectedTaskIds] = useState([]);
 
-  useEffect(() => {
-    const fetchSprints = async () => {
-      try {
-        const response = await axios.get(
-          `http://localhost:3001/api/v1/sprint/all-sprints/${id}`
-        );
-        if (response.data.success) {
-          setSprints(response.data.data);
-        } else {
-          message.error("Failed to fetch sprints.");
-        }
-      } catch (error) {
-        message.error("Error fetching sprints.");
-        console.error("Fetch sprints error:", error);
+  // Fetch sprints when component mounts or when a new sprint is added
+  const fetchSprints = async () => {
+    try {
+      const response = await axios.get(
+        `http://localhost:3001/api/v1/sprint/all-sprints/${id}`
+      );
+      if (response.data.success) {
+        setSprints(response.data.data);
+      } else {
+        message.error("Failed to fetch sprints.");
       }
-    };
+    } catch (error) {
+      message.error("Error fetching sprints.");
+      console.error("Fetch sprints error:", error);
+    }
+  };
 
+  // Fetch tasks when component mounts or when new tasks are assigned
+  const fetchTasks = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.get(`/api/v1/tasks/getTask/${id}`);
+      setAvailableTasks(response.data.getTasks); // Assuming tasks are in response.data.getTasks
+    } catch (error) {
+      message.error(error.message || "Failed to fetch tasks");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchSprints();
-  }, [id]);
-
-  useEffect(() => {
-    const fetchTasks = async () => {
-      setLoading(true);
-      try {
-        const response = await axios.get(`/api/v1/tasks/getTask/${id}`);
-        setAvailableTasks(response.data.getTasks); // Assuming tasks are in response.data.getTasks
-      } catch (error) {
-        message.error(error.message || "Failed to fetch tasks");
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchTasks();
   }, [id]);
 
@@ -141,6 +140,7 @@ const Scrum = () => {
         message.success(response.data.message);
         setSprintModalVisible(false); // Close modal on success
         setNewSprint({ name: "", startDate: null, endDate: null });
+        fetchSprints(); // Refresh sprints after adding a new one
       } else {
         message.error(response.data.message || "Failed to add sprint.");
       }
@@ -166,6 +166,8 @@ const Scrum = () => {
         message.success("Tasks assigned to sprint successfully.");
         setTaskModalVisible(false); // Close modal on success
         setSelectedTaskIds([]);
+        fetchTasks(); // Refresh tasks after assignment
+        fetchTasksForSprint(selectedSprint); // Refresh sprint tasks
       } else {
         message.error(response.data.message || "Failed to assign tasks.");
       }
@@ -175,7 +177,7 @@ const Scrum = () => {
     }
   };
 
-  const onDragEnd = async(result) => {
+  const onDragEnd = async (result) => {
     const { source, destination } = result;
 
     if (!destination) return;
@@ -190,22 +192,22 @@ const Scrum = () => {
     const destinationColumn = tasks[destination.droppableId];
     destinationColumn.splice(destination.index, 0, movedTask);
 
-      // Update status only if task moved to a different column
-      if (source.droppableId !== destination.droppableId) {
-         try {
-           // Send patch request with normalized status
-           const response = await axios.patch(`/api/v1/tasks/patchTask/${movedTask._id}/move`, {
-             status: destination.droppableId,
-           });
-           if (response.data.success) {
-             message.success("Task status updated successfully");
-           }
-         } catch (error) {
-           message.error("Failed to update task status");
-           return;
-         }
-       }
-
+    if (source.droppableId !== destination.droppableId) {
+      try {
+        const response = await axios.patch(
+          `/api/v1/tasks/patchTask/${movedTask._id}/move`,
+          {
+            status: destination.droppableId,
+          }
+        );
+        if (response.data.success) {
+          message.success("Task status updated successfully");
+        }
+      } catch (error) {
+        message.error("Failed to update task status");
+        return;
+      }
+    }
 
     setTasks({
       ...tasks,
@@ -233,7 +235,7 @@ const Scrum = () => {
 
   return (
     <div>
-      <AddTask  />
+      <AddTask />
       <Title level={3}>Scrum Board</Title>
       <Button
         onClick={() => setSprintModalVisible(true)}
