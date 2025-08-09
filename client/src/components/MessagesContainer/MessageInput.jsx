@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import useSendMessages from "../../hooks/useSendMessages";
-import Loading from "../UI/Loading";
+import Loading from "../Static/Loading";
 
 const MessageInput = () => {
   const [message, setMessage] = useState("");

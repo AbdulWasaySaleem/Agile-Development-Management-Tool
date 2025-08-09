@@ -2,7 +2,7 @@
 import React from "react";
 import Conversation from "./Conversation";
 import useGetConversation from "../../hooks/useGetConversation";
-import Loading from "../UI/Loading";
+import Loading from "../Static/Loading";
 
 const Conversations = () => {
   const { loading, conversations } = useGetConversation();

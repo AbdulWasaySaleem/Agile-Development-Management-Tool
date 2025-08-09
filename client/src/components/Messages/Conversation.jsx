@@ -1,5 +1,5 @@
 import React from "react";
-import Divider from "../UI/Divider";
+import Divider from "../Static/Divider";
 import useConversation from "../../zustand/useConversation";
 import { useSocketContext } from "../Context/SocketContext"; // Import the socket context
 

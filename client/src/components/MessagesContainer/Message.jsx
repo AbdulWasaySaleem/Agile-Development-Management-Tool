@@ -1,7 +1,7 @@
 // Message Component
 import React, { useEffect, useRef } from "react";
 import useGetMessages from "../../hooks/useGetMessages";
-import Loading from "../UI/Loading";
+import Loading from "../Static/Loading";
 import AllMessages from "./AllMessages";
 import useListenMessages from "../../hooks/useListenMessages";
 

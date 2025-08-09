@@ -14,8 +14,8 @@ import { useAuth } from "../components/Context/UserContext";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import { PlusOutlined } from "@ant-design/icons"; // Import the desired Ant Design icon
-import ProjectBarChart from "../components/UI/Barchart";
-import TaskLineChart from "../components/UI/LineChart";
+import ProjectBarChart from "../components/Static/Barchart";
+import TaskLineChart from "../components/Static/LineChart";
 
 const { Header, Content } = Layout;
 const { Title, Text } = Typography;

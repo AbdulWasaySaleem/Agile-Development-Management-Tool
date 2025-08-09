@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import MessageInput from "./MessageInput";
 import Message from "./Message";
 import useConversation from "../../zustand/useConversation";
-import NoChat from "../UI/NoChat";
+import NoChat from "../Static/NoChat";
 
 const MessageContainer = () => {
   const { selectedConversation, setSelectedConversation } = useConversation();

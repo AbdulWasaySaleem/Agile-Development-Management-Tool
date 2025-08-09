@@ -47,7 +47,7 @@ app.get("/", (req, res) => {
   res.send("Hello World!");
 });
 
-const port = process.env.PORT || 3002;
+const port = process.env.PORT;
 server.listen(port, () => {
   // Connection to DB
   connectDB();
