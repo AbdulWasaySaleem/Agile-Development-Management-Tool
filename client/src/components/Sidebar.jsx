@@ -1,37 +1,42 @@
-import React from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../components/Context/UserContext";
-import { Layout, Menu, Avatar, Button } from "antd";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { useAuth } from "./Context/UserContext";
+import {
+  LogOut,
+  Home,
+  FolderOpen,
+  Users,
+  Clock,
+  MessageSquare,
+  CheckSquare,
+  BarChart3,
+  User,
+  Settings,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import { toast } from "react-toastify";
+import axios from "axios";
 import logo from "../assets/logo.jpg";
 import {
-  FaTachometerAlt,
-  FaProjectDiagram,
-  FaUsers,
-  FaCog,
-  FaChartBar,
-  FaUserPlus,
-  FaUser,
-  FaHome,
-  FaSignOutAlt,
-} from "react-icons/fa";
-import { MdAssignment } from "react-icons/md";
-import { IoMdPaper } from "react-icons/io";
-import { AiOutlineMail } from "react-icons/ai"; // Import the Mail icon for Messages Inbox
-import axios from "axios";
-import { toast } from "react-toastify";
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
-const { Sider } = Layout;
-
-const Sidebar = () => {
+export default function Sidebar({ collapsed }) {
   const [auth, setAuth] = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const role = auth.user?.role || "";
+  const user = auth.user;
 
   const handleLogout = async () => {
     try {
       const { data } = await axios.post("/api/v1/auth/logout");
       toast.info(data.message);
-
       if (data.success) {
         setAuth({ user: null, token: "", role: "" });
         localStorage.removeItem("auth");
@@ -42,85 +47,163 @@ const Sidebar = () => {
     }
   };
 
-  const renderLinks = () => {
-    const links = {
-      admin: [
-        { key: "home", icon: <FaHome />, path: "/" },
-        { key: "projects", icon: <FaProjectDiagram />, path: "/adminProjects" },
-        { key: "employees", icon: <FaUsers />, path: "/employees" },
-        { key: "pending-request", icon: <IoMdPaper />, path: "/pendingrequest" },
-        { key: "messages", icon: <AiOutlineMail />, path: "/messages" },
-        { key: "tasks", icon: <MdAssignment />, path: "/tasks" },
-        { key: "reports", icon: <FaChartBar />, path: "/reports" },
-        { key: "profile", icon: <FaUser />, path: "/profilepage" },
-        { key: "settings", icon: <FaCog />, path: "/settings" },
-      ],
-      hr: [
-        { key: "home", icon: <FaHome />, path: "/" },
-        { key: "employees", icon: <FaUsers />, path: "/employees" },
-        { key: "projects", icon: <FaProjectDiagram />, path: "/projects" },
-        { key: "messages", icon: <AiOutlineMail />, path: "/messages" },
-        { key: "reports", icon: <FaChartBar />, path: "/reports" },
-        { key: "register", icon: <FaUserPlus />, path: "/register" },
-        { key: "profile", icon: <FaUser />, path: "/profilepage" },
-      ],
-      senior_developer: [
-        { key: "home", icon: <FaHome />, path: "/" },
-        { key: "projects", icon: <FaProjectDiagram />, path: "/projects" },
-        { key: "tasks", icon: <MdAssignment />, path: "/tasks" },
-        { key: "messages", icon: <AiOutlineMail />, path: "/messages" },
-        { key: "reports", icon: <FaChartBar />, path: "/reports" },
-        { key: "profile", icon: <FaUser />, path: "/profilepage" },
-      ],
-      junior_developer: [
-        { key: "home", icon: <FaHome />, path: "/" },
-        { key: "tasks", icon: <MdAssignment />, path: "/tasks" },
-        { key: "profile", icon: <FaUser />, path: "/profilepage" },
-      ],
-    };
-
-    return links[role]?.map(({ key, icon, path }) => (
-      <Menu.Item key={key} icon={icon}>
-        <Link to={path}>{key.replace(/-/g, ' ').toUpperCase()}</Link>
-      </Menu.Item>
-    )) || <div>No Access</div>;
+  // Updated links with Lucide React icons
+  const links = {
+    admin: [
+      { key: "home", label: "Dashboard", path: "/", icon: Home },
+      {
+        key: "projects",
+        label: "Projects",
+        path: "/adminProjects",
+        icon: FolderOpen,
+      },
+      { key: "employees", label: "Employees", path: "/employees", icon: Users },
+      {
+        key: "pending-request",
+        label: "Pending Requests",
+        path: "/pendingrequest",
+        icon: Clock,
+      },
+      {
+        key: "messages",
+        label: "Messages",
+        path: "/messages",
+        icon: MessageSquare,
+      },
+      { key: "tasks", label: "Tasks", path: "/tasks", icon: CheckSquare },
+      { key: "reports", label: "Reports", path: "/reports", icon: BarChart3 },
+      { key: "profile", label: "Profile", path: "/profilepage", icon: User },
+      { key: "settings", label: "Settings", path: "/settings", icon: Settings },
+    ],
   };
 
-  return (
-    <Sider width={250} className="site-layout-background">
-    <div style={{ padding: '16px', textAlign: 'center' }}>
-      <div style={{ 
-        width: '80%', 
-        height: '60px', 
-        overflow: 'hidden', 
-        position: 'relative', 
-        margin: '0 auto' 
-      }}>
-        <img 
-          src={logo} 
-          alt="Logo" 
-          style={{ 
-            width: '100%', 
-            height: 'auto', 
-            position: 'absolute', 
-            top: '-70%',  // Adjust this value to crop vertically 
-          }} 
-        />
+  const SidebarContent = () => (
+    <div className="flex flex-col h-full bg-gradient-to-b from-slate-900 to-slate-800 text-white shadow-xl">
+      {/* Header */}
+      <div
+        className={`flex items-center gap-3 p-4 border-b border-slate-700 ${
+          collapsed ? "justify-center" : ""
+        }`}
+      >
+        <div className="flex-shrink-0">
+          <img
+            src={logo}
+            alt="Logo"
+            className="w-10 h-10 rounded-lg object-cover"
+          />
+        </div>
+        {!collapsed && (
+          <div className="flex flex-col">
+            <p className="font-bold text-lg leading-tight">Agile Dev</p>
+            <p className="text-xs text-slate-300">Management</p>
+          </div>
+        )}
       </div>
-      <p style={{ margin: '8px 0', fontSize: '16px', fontWeight: 'bold', color: '#fff' }}>
-        Agile Development
-      </p>
-    </div>
-    <Menu theme="dark" mode="inline">
-      {renderLinks()}
-    </Menu>
-    <Button type="primary" danger style={{ margin: '16px' }} onClick={handleLogout}>
-      <FaSignOutAlt /> Logout
-    </Button>
-  </Sider>
-  
-  
-  );
-};
 
-export default Sidebar;
+      {/* Navigation */}
+      <nav className="flex-1 p-3 space-y-1">
+        <TooltipProvider delayDuration={0}>
+          {links[role]?.map((link) => {
+            const Icon = link.icon;
+            const isActive = location.pathname === link.path;
+
+            const linkContent = (
+              <Link
+                key={link.key}
+                to={link.path}
+                className={`
+                  flex items-center gap-3 px-3 py-3 rounded-lg transition-all duration-200
+                  hover:bg-white/10 hover:translate-x-1 hover:shadow-lg
+                  ${
+                    isActive
+                      ? "bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg"
+                      : "text-slate-300 hover:text-white"
+                  }
+                  ${collapsed ? "justify-center" : ""}
+                `}
+              >
+                <Icon
+                  className={`flex-shrink-0 ${
+                    collapsed ? "w-6 h-6" : "w-5 h-5"
+                  }`}
+                />
+                {!collapsed && (
+                  <span className="font-medium text-sm truncate">
+                    {link.label}
+                  </span>
+                )}
+                {isActive && !collapsed && (
+                  <div className="ml-auto w-2 h-2 bg-white rounded-full animate-pulse" />
+                )}
+              </Link>
+            );
+
+            if (collapsed) {
+              return (
+                <Tooltip key={link.key}>
+                  <TooltipTrigger asChild>{linkContent}</TooltipTrigger>
+                  <TooltipContent side="right" className="font-medium">
+                    {link.label}
+                  </TooltipContent>
+                </Tooltip>
+              );
+            }
+
+            return linkContent;
+          })}
+        </TooltipProvider>
+      </nav>
+
+      {/* Footer */}
+      <div className="p-3 border-t border-slate-700 space-y-2">
+        {/* Collapse Toggle - Desktop only */}
+        <div className="hidden lg:block">
+          <TooltipProvider>
+            <Tooltip>
+              {collapsed && (
+                <TooltipContent side="right">Expand Sidebar</TooltipContent>
+              )}
+            </Tooltip>
+          </TooltipProvider>
+        </div>
+
+        {/* Logout Button */}
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="destructive"
+                size="sm"
+                onClick={handleLogout}
+                className={`w-full bg-red-600 hover:bg-red-700 ${
+                  collapsed ? "px-3" : ""
+                }`}
+              >
+                <LogOut
+                  className={`${collapsed ? "w-4 h-4" : "w-4 h-4 mr-2"}`}
+                />
+                {!collapsed && "Logout"}
+              </Button>
+            </TooltipTrigger>
+            {collapsed && <TooltipContent side="right">Logout</TooltipContent>}
+          </Tooltip>
+        </TooltipProvider>
+      </div>
+    </div>
+  );
+
+  return (
+    <>
+      {/* Desktop Sidebar */}
+      <aside
+        className={`
+        hidden lg:flex lg:flex-col fixed left-0 top-0 h-full z-40
+        transition-all duration-300 ease-in-out
+        ${collapsed ? "w-16" : "w-64"}
+      `}
+      >
+        <SidebarContent />
+      </aside>
+    </>
+  );
+}
