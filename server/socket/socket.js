@@ -1,6 +1,9 @@
 import { Server } from "socket.io";
 import http from "http";
 import express from "express";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const app = express();
 const server = http.createServer(app);
@@ -11,14 +14,14 @@ const userSocketMap = {};
 // Initialize the Socket.IO server with CORS configuration
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:5173", // Frontend URL to allow CORS requests from
+    origin: process.env.FRONTEND_URL,
     methods: ["GET", "POST"], // HTTP methods allowed
   },
 });
 
-export const getReceiverSocketId = (receiverId)=>{
-  return userSocketMap[receiverId]
-}
+export const getReceiverSocketId = (receiverId) => {
+  return userSocketMap[receiverId];
+};
 
 // Handle client connections
 io.on("connection", (socket) => {

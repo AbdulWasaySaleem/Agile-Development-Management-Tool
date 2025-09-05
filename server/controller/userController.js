@@ -123,8 +123,8 @@ export const login = async (req, res) => {
         name: user.name,
         email: user.email,
         role: user.role,
-        pic: user.profilePicture.url
-        
+        pic: user.profilePicture.url,
+        demoUser: user.isDemoUser
       },
     });
   } catch (error) {

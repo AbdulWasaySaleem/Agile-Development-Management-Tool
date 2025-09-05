@@ -1,60 +1,81 @@
 import JWT from "jsonwebtoken";
 import userModel from "../Model/userModel.js";
 
+// Middleware: require sign in
 export const requireSignIn = async (req, res, next) => {
   try {
-    const token = req.cookies.jwt;
+    let token;
+
+    if (req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
+      token = req.headers.authorization.split(" ")[1];
+    } else if (req.cookies.jwt) {
+      token = req.cookies.jwt;
+    }
 
     if (!token) {
-      return res.status(401).json({
-        error: "Unautorized -No Token Provided",
-      });
+      return res.status(401).json({ error: "Unauthorized - No Token Provided" });
     }
-    //console.log("token", token);
 
     const decode = JWT.verify(token, process.env.JWT_SECRET);
-
-    //console.log("decode", decode);
     if (!decode) {
-      return res.status(401).json({
-        error: "Unautorized -Invalid Token",
-      });
+      return res.status(401).json({ error: "Unauthorized - Invalid Token" });
     }
 
     const user = await userModel.findById(decode.userId).select("-password");
-
     if (!user) {
-      return res.status(401).json({
-        error: "User not found",
-      });
+      return res.status(401).json({ error: "User not found" });
     }
-    //console.log("user:", user);
+
+   //console.log("Authenticated User:", user); 
 
     req.user = user;
     next();
   } catch (error) {
     console.log("Error on middleware", error);
+    res.status(401).json({ error: "Unauthorized" });
   }
 };
 
+// Middleware: only admin
 export const isAdmin = async (req, res, next) => {
   try {
-    const user = await userModel.findById(req.user._id);
-    console.log(user);
-    if (user.role !== "admin") {
-      return res.status(401).send({
+    //console.log("User Role:", req.user); // Debugging line
+    if (req.user.role !== "admin") {
+      return res.status(403).json({
         success: false,
         message: "UnAuthorized Access",
       });
-    } else {
-      next();
     }
+    next();
   } catch (error) {
     console.log(error);
-    res.status(401).send({
+    res.status(403).json({
       success: false,
       error,
       message: "middleware error in isAdmin",
+    });
+  }
+};
+
+// Middleware: block demo users from write operations
+export const blockDemoUser = (req, res, next) => {
+  try {
+    if (req.user?.isDemoUser) {
+      // Allow read-only (GET)
+      if (req.method !== "GET") {
+        return res.status(403).json({
+          success: false,
+          message: "Demo user cannot perform this action",
+        });
+      }
+    }
+    next();
+  } catch (error) {
+    console.log(error);
+    res.status(403).json({
+      success: false,
+      error,
+      message: "middleware error in blockDemoUser",
     });
   }
 };

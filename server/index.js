@@ -18,16 +18,12 @@ import { app, server } from "./socket/socket.js";
 // Configure .env
 dotenv.config();
 
-
-
 // Cloudinary config
 cloudinary.v2.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
-
-
 
 // Middleware
 app.use(express.json());
@@ -38,10 +34,10 @@ app.use(cookieParser());
 app.use("/api/v1/auth", userRoute);
 app.use("/api/message", messageRoute);
 app.use("/api/usermessage", userMessageRoute);
-app.use("/api/v1/tasks", taskRoute)
-app.use("/api/v1/project", projectRoute)
-app.use("/api/v1/sprint", sprintRoute)
-app.use("/api/v1/xproute", xpRoute)
+app.use("/api/v1/tasks", taskRoute);
+app.use("/api/v1/project", projectRoute);
+app.use("/api/v1/sprint", sprintRoute);
+app.use("/api/v1/xproute", xpRoute);
 
 app.get("/", (req, res) => {
   res.send("Hello World!");

@@ -1,23 +1,23 @@
 import Sprint from "../Model/sprintModel.js";
 
 export const addSprint = async (req, res) => {
-  const {projectId} = req.params;
-  const {name, startDate, endDate} = req.body;
+  const { projectId } = req.params;
+  const { name, startDate, endDate } = req.body;
   try {
     const newSprint = new Sprint({
       name,
       startDate,
       endDate,
-      project: projectId
+      project: projectId,
     });
     await newSprint.save();
-    res.status(201).send({success:true,message:"Sprint added successfully",newSprint});
+    res
+      .status(201)
+      .send({ success: true, message: "Sprint added successfully", newSprint });
   } catch (error) {
-    console.log("somethign went wrong while creating sprint",error);
-    
+    console.log("somethign went wrong while creating sprint", error);
   }
-}
-
+};
 
 export const allSprints = async (req, res) => {
   const { projectId } = req.params;
@@ -28,14 +28,26 @@ export const allSprints = async (req, res) => {
 
     // Check if sprints exist
     if (!sprints.length) {
-      return res.status(404).json({ success: false, message: 'No sprints found for this project.' });
+      return res
+        .status(404)
+        .json({
+          success: false,
+          message: "No sprints found for this project.",
+        });
     }
 
     // Return the found sprints
-    res.status(200).json({ success: true, data: sprints, message:"All Sprints" });
+    res
+      .status(200)
+      .json({ success: true, data: sprints, message: "All Sprints" });
   } catch (error) {
-    console.error('Error fetching sprints:', error);
-    res.status(500).json({ success: false, message: 'Server error while fetching sprints.' });
+    console.error("Error fetching sprints:", error);
+    res
+      .status(500)
+      .json({
+        success: false,
+        message: "Server error while fetching sprints.",
+      });
   }
 };
 
@@ -48,13 +60,23 @@ export const deleteSprint = async (req, res) => {
 
     // Check if sprint exists
     if (!sprint) {
-      return res.status(404).json({ success: false, message: 'Sprint not found.' });
+      return res
+        .status(404)
+        .json({ success: false, message: "Sprint not found." });
     }
 
     // Return the deleted sprint
-    res.status(200).json({ success: true, data: sprint, message: 'Sprint deleted successfully.' });
+    res
+      .status(200)
+      .json({
+        success: true,
+        data: sprint,
+        message: "Sprint deleted successfully.",
+      });
   } catch (error) {
-    console.error('Error deleting sprint:', error);
-    res.status(500).json({ success: false, message: 'Server error while deleting sprint.' });
+    console.error("Error deleting sprint:", error);
+    res
+      .status(500)
+      .json({ success: false, message: "Server error while deleting sprint." });
   }
-}
+};

@@ -63,12 +63,15 @@ export const getTasks = async (req, res) => {
 export const addnewTask = async (req, res) => {
   const { title, description, assignedBy, assignedTo, sprint, xpPhase } = req.body;
 
+  console.log("add-new-task",title, description, assignedBy, assignedTo, sprint, xpPhase);
+
   if (!title || !description) {
     return res.status(400).json({ message: "Title and description are required" });
   }
 
   try {
     const project = await Project.findById(assignedTo);
+    console.log("project", project);
     if (!project) return res.status(404).json({ message: "Project not found" });
 
     const newTask = new Task({

@@ -4,6 +4,8 @@ import userModel from "../Model/userModel.js";
 export const getUserForSideBar = async (req,res)=>{
   const loggedInUser = req.user._id 
 
+  console.log(loggedInUser)
+
   const filterUser = await userModel.find({_id:{ $ne: loggedInUser}}).select("-password")
 
   return res.status(200).json(filterUser)

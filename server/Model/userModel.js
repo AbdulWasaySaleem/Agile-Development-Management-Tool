@@ -92,6 +92,7 @@ const userSchema = new mongoose.Schema(
       ],
       default: [],
     },
+    isDemoUser: { type: Boolean, default: false }
   },
   { timestamps: true }
 );
