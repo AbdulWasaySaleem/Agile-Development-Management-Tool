@@ -39,12 +39,13 @@ export default function ViewProjectDetails() {
 
   const handleStatusChange = useCallback(
     (status: string) => {
-      if (!project) return;
+      const pid = project?._id;
+      if (!pid) return;
       updateStatusMutation.mutate(
-        { projectId: project._id, status },
+        { projectId: pid, status },
         {
           onSuccess: (data: any) =>
-            toast.success(data.message || "Project status updated")
+            toast.success(data.message || "Project status updated"),
         }
       );
     },
@@ -52,14 +53,15 @@ export default function ViewProjectDetails() {
   );
 
   const handleAddMember = useCallback(() => {
-    if (!project || !selectedMember) return;
+    const pid = project?._id;
+    if (!pid || !selectedMember) return;
     addMemberMutation.mutate(
-      { projectId: project._id, userId: selectedMember },
+      { projectId: pid, userId: selectedMember },
       {
-        onSuccess: (data: unknown) => {
+        onSuccess: (data: any) => {
           setSelectedMember(null);
           toast.success(data.message || "Member added successfully");
-        }
+        },
       }
     );
   }, [project?._id, selectedMember, addMemberMutation]);

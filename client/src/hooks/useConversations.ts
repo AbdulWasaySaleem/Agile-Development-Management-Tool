@@ -1,18 +1,21 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { getAllConversations, getUserMessages, sendMessage } from "@/api/conversationApi"
-import { Conversation } from "@/types/conversations"
-import toast from "react-hot-toast"
-import useConversation from "@/app/store/useConversation"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  getAllConversations,
+  getUserMessages,
+  sendMessage,
+} from "@/api/conversationApi";
+import { Conversation } from "@/types/conversations";
+import toast from "react-hot-toast";
+import useConversation from "@/app/store/useConversation";
 
-export type AllConversations = Conversation[]
-
+export type AllConversations = Conversation[];
 
 export function useConversations() {
   return useQuery<AllConversations>({
     queryKey: ["conversations"],
     queryFn: getAllConversations,
     staleTime: 1000 * 60 * 5, // 5 minutes
-  })
+  });
 }
 
 export const useSendMessage = () => {
@@ -20,13 +23,14 @@ export const useSendMessage = () => {
   const { selectedConversation, setMessages, messages } = useConversation();
   console.log("Selected Conversation in hook:", selectedConversation);
 
-  return useMutation({
+  return useMutation<any, unknown, string>({
     mutationFn: (message: string) => {
-      if (!selectedConversation?.id) throw new Error("No conversation selected");
-      console.log(message)
-      return sendMessage(selectedConversation.id, message);
+      if (!selectedConversation?._id)
+        throw new Error("No conversation selected");
+      console.log(message);
+      return sendMessage(selectedConversation._id, message);
     },
-    onSuccess: (data) => {
+    onSuccess: (data: any) => {
       if (data.error) {
         toast.error(data.error);
         return;
@@ -37,20 +41,21 @@ export const useSendMessage = () => {
 
       // Invalidate messages query (keeps React Query in sync)
       queryClient.invalidateQueries({
-        queryKey: ["messages", selectedConversation?.id],
+        queryKey: ["messages", selectedConversation?._id],
       });
-    }
+    },
   });
 };
 
 export const useGetMessages = () => {
   const { selectedConversation, messages, setMessages } = useConversation();
 
-  const query = useQuery({
-    queryKey: ["messages", selectedConversation?.id], // cache per conversation
-    queryFn: () => getUserMessages(selectedConversation!.id),
-    enabled: !!selectedConversation?.id, // only fetch if a convo is selected
-    onSuccess: (data) => {
+  const query = useQuery<any[]>({
+    queryKey: ["messages", selectedConversation?._id], // cache per conversation
+    queryFn: () => getUserMessages(selectedConversation!._id),
+    initialData: [], 
+    enabled: !!selectedConversation?._id, // only fetch if a convo is selected
+    onSuccess: (data: any) => {
       setMessages(data); // keep Zustand store in sync
     },
     onError: (error: any) => {

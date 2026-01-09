@@ -1,11 +1,21 @@
-import {create} from 'zustand'
+import { create } from "zustand";
+import { Conversation } from "@/types/conversations";
 
-const useConversation = create((set) => ({
+type SelectedConversation = Conversation | null;
+
+interface ConversationStore {
+  selectedConversation: SelectedConversation;
+  setSelectedConversation: (conversation: SelectedConversation) => void;
+  messages: any[];
+  setMessages: (messages: any[]) => void;
+}
+
+const useConversation = create<ConversationStore>((set) => ({
   selectedConversation: null,
-  setSelectedConversation: (conversation) => set({ selectedConversation: conversation }),
+  setSelectedConversation: (conversation: SelectedConversation) =>
+    set({ selectedConversation: conversation }),
   messages: [],
-  setMessages: (messages) => set({ messages }),
+  setMessages: (messages: any[]) => set({ messages }),
 }));
-
 
 export default useConversation;

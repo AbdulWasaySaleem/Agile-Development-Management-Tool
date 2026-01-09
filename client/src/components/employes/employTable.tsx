@@ -1,11 +1,11 @@
 "use client";
 
-import { User } from "@/app/employees/page";
+import { Member } from "@/types/member";
 import { Card, CardContent } from "@/components/ui/card";
 import UserRow from "./userRow";
 
 interface Props {
-  users: User[];
+  users: Member[];
 }
 
 export default function UserTable({ users }: Props) {
